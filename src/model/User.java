@@ -1,10 +1,16 @@
 package model;
 
+import java.util.Vector;
+
+/*
+ * This class represents a User that plays the loto game
+ */
 public class User {
 
 	private String login;
 	private Integer money;
 	private Integer nb_tirages;
+	private Vector<Grid> grids; //TODO
 
 	public User(String login, Integer money, Integer nb_tirages) {
 		this.login = login;

@@ -3,6 +3,9 @@ package model;
 import java.util.Iterator;
 import java.util.Set;
 
+/*
+ * This class represents a Grid played by a player for the loto game
+ */
 public class Grid {
 	
 	private Set<Integer> numeros;
@@ -23,11 +26,11 @@ public class Grid {
 		return price;
 	}
 
-	public void setNumeros(Set<Integer> numeros) {
+	private void setNumeros(Set<Integer> numeros) {
 		this.numeros = numeros;
 	}
 
-	public void setN_chances(Set<Integer> n_chances) {
+	private void setN_chances(Set<Integer> n_chances) {
 		this.n_chances = n_chances;
 	}
 
@@ -93,7 +96,7 @@ public class Grid {
 	/*
 	 * Sets the price corresponding to the played grid
 	 */
-	public void setPrice(Integer nb_numeros, Integer nb_n_chances) {
+	private void setPrice(Integer nb_numeros, Integer nb_n_chances) {
 		Integer base = null;
 		if (nb_numeros == 5) {
 			base = 2;
@@ -116,6 +119,19 @@ public class Grid {
 		this.price = base*nb_n_chances;
 	}
 	
-	
+	/*
+	 * Sets a grid after checking it
+	 */
+	public boolean setGrid(Set<Integer> numeros, Set<Integer> n_chances) {
+		if(this.checkGrid(numeros, n_chances)) {
+			Integer nb_numeros = numeros.size();
+			Integer nb_n_chances = n_chances.size();
+			this.setNumeros(numeros);
+			this.setN_chances(n_chances);
+			this.setPrice(nb_numeros, nb_n_chances);
+			return true;
+		}
+		return false;
+	}
 	
 }
