@@ -12,7 +12,9 @@ public class RandomDrawing {
 	private Set<Integer> numeros;
 	private Integer n_chance;
 	
-	public RandomDrawing() {}
+	public RandomDrawing() {
+		this.setRandomDrawing();
+	}
 	
 	public Set<Integer> getNumeros() {
 		return numeros;
@@ -48,7 +50,7 @@ public class RandomDrawing {
 	/*
 	 * Generates loto draw and save it into RandomDrawing object
 	 */
-	public void setRandomDrawing() {
+	private void setRandomDrawing() {
 		Set<Integer> draw_numbers = generateNumeros();
 		Integer draw_n_chance = generateNChance();
 		this.setNumeros(draw_numbers);
