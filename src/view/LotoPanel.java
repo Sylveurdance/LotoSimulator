@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -26,8 +27,8 @@ import model.RandomDrawing;
 @SuppressWarnings("serial")
 public class LotoPanel extends JPanel {
 
-	private JButton makeGrid;
-	private JButton drawing;
+	private JButton makeGrid;				// action button (valids a grid)
+	private JButton drawing;				// action button (launch draw)
 	private Vector<JButton> choices; 		// choices of the user to make his grid
 	private Vector<JButton> choices_chance; // choices of the user to make his grid for n_chance
 	private JLabel user_status; 			// contains user status (login & money left)
@@ -39,6 +40,9 @@ public class LotoPanel extends JPanel {
 	private JPanel p_drawing; 				// contains pictures of the draw
 	private JPanel p_loto; 					// contains loto
 	private JPanel buttons; 				// contains the two actions buttons
+	
+	private Set<Integer> tmp_numeros;		// contains temporary choices of numbers by the user
+	private Set<Integer> tmp_n_chances;		// contains temporary choices of chance numbers by the user
 	
 	LotoPanel() {
 		// General settings
@@ -56,6 +60,9 @@ public class LotoPanel extends JPanel {
 		p_loto 				= new JPanel();
 		buttons 			= new JPanel();
 		
+		tmp_numeros 		=  new TreeSet<Integer>();
+		tmp_n_chances 		=  new TreeSet<Integer>();
+		
 		// user label
 		user_status.setText(Cookies.getCurrentUser().getLogin()+" : "+Cookies.getCurrentUser().getMoney());
 		user_status.setHorizontalAlignment(JLabel.CENTER);
@@ -63,8 +70,9 @@ public class LotoPanel extends JPanel {
 		// loto = make Grid + drawing
 		this.makeChooseGrid();
 
-		p_loto.add(p_makeGrid);
-		p_loto.add(p_drawing);
+		p_loto.setLayout(new BorderLayout());
+		p_loto.add(p_makeGrid, BorderLayout.NORTH);
+		p_loto.add(p_drawing, BorderLayout.CENTER);
 		
 		// JPanel buttons
 		makeGrid = new JButton("Valid a grid");
@@ -93,11 +101,12 @@ public class LotoPanel extends JPanel {
 			choices = new Vector<JButton>();
 			for (int i=1;i<50;i++) {
 				ImageIcon icon = new ImageIcon("./img/boule"+i+".jpg");
-				Image img = icon.getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
+				Image img = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
 				icon = new ImageIcon(img);
 				choices.add(i-1, new JButton(String.valueOf(i)));
 				choices.get(i-1).setIcon(icon);
-				choices.get(i-1).setSize(35, 35);
+				choices.get(i-1).setSize(30, 30);
+				choices.get(i-1).addActionListener(new NumeroListener());
 			}
 		}
 		return choices;
@@ -112,11 +121,12 @@ public class LotoPanel extends JPanel {
 			choices_chance = new Vector<JButton>();
 			for (int i=1;i<11;i++) {
 				ImageIcon icon = new ImageIcon("./img/boule"+i+".jpg");
-				Image img = icon.getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
+				Image img = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
 				icon = new ImageIcon(img);
 				choices_chance.add(i-1, new JButton(String.valueOf(i)));
 				choices_chance.get(i-1).setIcon(icon);
-				choices_chance.get(i-1).setSize(35, 35);
+				choices_chance.get(i-1).setSize(30, 30);
+				choices_chance.get(i-1).addActionListener(new NChanceListener());
 			}
 		}
 		return choices_chance;
@@ -159,7 +169,7 @@ public class LotoPanel extends JPanel {
 	public void paintComponent(Graphics g, Integer boule_num, Integer count) {
 	    try {
 	      Image img = ImageIO.read(new File("./img/boule"+boule_num+".jpg"));
-	      g.drawImage(img,50+80*count, 100, 40, 40, this);
+	      g.drawImage(img,250+80*count, 0, 40, 40, p_drawing);
 
 	    } catch (IOException e) {
 	      e.printStackTrace();
@@ -172,7 +182,6 @@ public class LotoPanel extends JPanel {
 	public void displayImages(Set<Integer> numeros, Integer n_chance) {
 		Iterator<Integer> iterator1 = numeros.iterator();
 		Integer count = 0; // counts if this is the first ball drawn or the sixth...
-		
 		while(iterator1.hasNext()) {
 			this.paintComponent(p_drawing.getGraphics(), iterator1.next(), count);
 			count++;
@@ -180,20 +189,87 @@ public class LotoPanel extends JPanel {
 		this.paintComponent(p_drawing.getGraphics(), n_chance, count);
 	}
 
+	/*
+	 * Action to do when the user chooses a specific numero
+	 */
+	class NumeroListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			Integer buttonNum = Integer.valueOf(((JButton) e.getSource()).getText());
+			if((buttonNum != null) && (buttonNum < 50)) {
+				tmp_numeros.add(buttonNum);
+				((JButton) e.getSource()).setEnabled(false);
+			}
+		}
+	}
+	
+	/*
+	 * Action to do when the user chooses a specific chance number
+	 */
+	class NChanceListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			Integer buttonNum = Integer.valueOf(((JButton) e.getSource()).getText());
+			if((buttonNum != null) && (buttonNum <= 10)) {
+				tmp_n_chances.add(buttonNum);
+				((JButton) e.getSource()).setEnabled(false);
+			}
+		}
+	}
+	
+	/*
+	 * Action to do when the user valids his choices
+	 */
 	class MakeGridListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			//TODO
-			//Cookies.getCurrentUser().setGrids(grids);
+			// Add the current user his grid
+			Cookies.getCurrentUser().addGrid(tmp_numeros, tmp_n_chances);
+			System.out.println(Cookies.getCurrentUser().getGrids().get(0).getNumeros());
+			System.out.println(Cookies.getCurrentUser().getGrids().get(0).getN_chances());
+			
+			// Updates User status
+			user_status.setText(Cookies.getCurrentUser().getLogin()+" : "+Cookies.getCurrentUser().getMoney());
+			
+			// Enables again buttons
+			Iterator<Integer> iterator1 = tmp_numeros.iterator();
+			Iterator<Integer> iterator2 = tmp_n_chances.iterator();
+			while(iterator1.hasNext()) {
+		    	Integer index = Integer.valueOf(iterator1.next());
+		    	choices.get(index-1).setEnabled(true);
+			}
+			while(iterator2.hasNext()) {
+		    	Integer index = Integer.valueOf(iterator2.next());
+		    	choices_chance.get(index-1).setEnabled(true);
+			}
+			
+			// Clears tmp Sets
+			tmp_numeros.clear();
+			tmp_n_chances.clear();
+
+			// Enables the draw button
 			drawing.setEnabled(true);
 		}
 	}
 	
+	/*
+	 * Action to do when the user wants to launch a draw
+	 */
 	class DrawingListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			// Drawing phase
 			RandomDrawing draw = new RandomDrawing();
+			
+			// Displays draw
 			displayImages(draw.getNumeros(),draw.getN_chance());
-			//Cookies.getCurrentUser().setWins(draw);
+			
+			// Checks if the user did win or not
+			System.out.println(Cookies.getCurrentUser().getGrids().get(0).getNumeros());
+			System.out.println(Cookies.getCurrentUser().getGrids().get(0).getN_chances());
+			Cookies.getCurrentUser().setWins(draw);
+			
+			// Updates User status
 			user_status.setText(Cookies.getCurrentUser().getLogin()+" : "+Cookies.getCurrentUser().getMoney());
+			
+			// Clear User played grids
+			Cookies.getCurrentUser().getGrids().clear();
 		}
 	}
 }

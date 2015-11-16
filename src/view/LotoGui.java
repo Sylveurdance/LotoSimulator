@@ -11,7 +11,7 @@ public class LotoGui extends JFrame {
 
 	public LotoGui() {
 		this.setTitle("Loto Simulator");
-	    this.setSize(700, 600);
+	    this.setSize(1000, 700);
 	    this.setLocationRelativeTo(null);
 	    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    this.setResizable(false);

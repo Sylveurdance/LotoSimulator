@@ -25,6 +25,7 @@ public class User {
 	public User(String login, Integer money) {
 		this.login = login;
 		this.money = money;
+		this.grids = new Vector<Grid>();
 	}
 
 	public String getLogin() {
@@ -47,13 +48,15 @@ public class User {
 		this.money = money;
 	}
 
-	public void setGrids(Vector<Grid> grids) {
-		this.grids = grids;
-		Integer cost = 0;
-		for (int i=0; i<grids.size(); i++) {
-			cost += grids.get(i).getPrice();
+	/*
+	 * Adds a grid into the vector of user grids after checking it
+	 */
+	public void addGrid(Set<Integer> numeros, Set<Integer> n_chances) {
+		Grid g = new Grid();
+		if (g.setGrid(numeros, n_chances)) {
+			this.grids.add(g);
+			this.setMoney(this.getMoney()-g.getPrice());
 		}
-		this.setMoney(this.getMoney()-cost);
 	}
 	
 	/*
