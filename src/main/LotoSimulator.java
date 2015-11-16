@@ -4,6 +4,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.Vector;
 
+import view.*;
 import model.*;
 
 public class LotoSimulator {
@@ -13,7 +14,18 @@ public class LotoSimulator {
 	 */
 	public static void main(String[] args) {
 		
-		// Testing process
+		Cookies cookie = new Cookies();
+		
+		String login = "toto";
+		cookie.readCookie(login);
+		User user1 = Cookies.getCurrentUser();
+		
+		LotoGui app = new LotoGui();
+		
+		cookie.updateCookie(user1);
+		
+		// Testing process (model)
+		/*
 		User user1 = new User("toto", 1000);
 		User user2 = new User("toto2", 1000);
 		
@@ -56,6 +68,7 @@ public class LotoSimulator {
 		
 		System.out.println(user1.getMoney());
 		System.out.println(user2.getMoney());
+		*/
 		
 	}
 
