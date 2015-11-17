@@ -2,23 +2,27 @@ package model;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Vector;
 
 /*
  * This class represents a Grid played by a player for the loto game
  */
 public class Grid {
 	
-	private Set<Integer> numeros;
-	private Set<Integer> n_chances;
+	private Vector<Integer> numeros;	// Vector is used to store numeros instead of Set to avoid syncronisation problems
+	private Vector<Integer> n_chances;
 	private Integer price;
-	
-	public Grid() {}
 
-	public Set<Integer> getNumeros() {
+	public Grid() {
+		this.numeros = new Vector<Integer>();
+		this.n_chances = new Vector<Integer>();
+	}
+	
+	public Vector<Integer> getNumeros() {
 		return numeros;
 	}
 
-	public Set<Integer> getN_chances() {
+	public Vector<Integer> getN_chances() {
 		return n_chances;
 	}
 
@@ -26,12 +30,18 @@ public class Grid {
 		return price;
 	}
 
+	/*
+	 * Take a Set, transform it to Vector before storing it
+	 */
 	private void setNumeros(Set<Integer> numeros) {
-		this.numeros = numeros;
+		this.numeros = new Vector<Integer>(numeros);
 	}
 
+	/*
+	 * Take a Set, transform it to Vector before storing it
+	 */
 	private void setN_chances(Set<Integer> n_chances) {
-		this.n_chances = n_chances;
+		this.n_chances = new Vector<Integer>(n_chances);
 	}
 
 	/*

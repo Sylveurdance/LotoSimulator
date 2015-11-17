@@ -23,8 +23,6 @@ public class Cookies {
 	/** Name of the cookie file */
 	private final String filename = "cookies.txt";
 	
-	private static User currentUser; // Current logged in user
-	
 	public Cookies() {
 		try
 		{
@@ -44,16 +42,9 @@ public class Cookies {
 	}
 	
 	/*
-	 * Access to the current user object
-	 */
-	public static User getCurrentUser() {
-		return currentUser;
-	}
-	
-	/*
 	 * Reads the cookie file and fill User attributes
 	 */
-	public void readCookie(String login) {
+	public User readCookie(String login) {
 		String line = new String("");
 		try {
 			line = in.readLine();
@@ -62,17 +53,16 @@ public class Cookies {
 					String s_money = line.split(";")[1];
 					Integer money = Integer.decode(s_money);
 					if (money != null) {
-						currentUser = new User(login,money);
-						return;
+						return new User(login,money);
 					}
 				}
 				line = in.readLine();
 			}
-			currentUser = new User(login,1000); // new user in the game
-			return;
+			return new User(login,1000); // new user in the game
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 	
 	/**

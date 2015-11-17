@@ -1,11 +1,10 @@
 package main;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.Vector;
+import java.awt.Dimension;
+
+import javax.swing.JFrame;
 
 import view.*;
-import model.*;
 
 public class LotoSimulator {
 
@@ -14,16 +13,16 @@ public class LotoSimulator {
 	 */
 	public static void main(String[] args) {
 		
-		Cookies cookie = new Cookies();
+		JFrame frame = new JFrame();
+		LotoPanel content = new LotoPanel();
+		frame.add(content);
+		frame.setMinimumSize(new Dimension(1000,800));
+		frame.setTitle("Loto Simulator");
+		frame.setLocationRelativeTo(null);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
 		
-		String login = "toto";
-		cookie.readCookie(login);
-		User user1 = Cookies.getCurrentUser();
-		
-		LotoGui app = new LotoGui();
-		
-		cookie.updateCookie(user1);
-		
+			
 		// Testing process (model)
 		/*
 		User user1 = new User("toto", 1000);

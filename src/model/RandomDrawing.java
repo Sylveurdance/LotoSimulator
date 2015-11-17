@@ -3,6 +3,7 @@ package model;
 import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeSet;
 
 /*
  * This class represents the random drawing during the loto game
@@ -13,6 +14,7 @@ public class RandomDrawing {
 	private Integer n_chance;
 	
 	public RandomDrawing() {
+		this.numeros = new TreeSet<Integer>();
 		this.setRandomDrawing();
 	}
 	

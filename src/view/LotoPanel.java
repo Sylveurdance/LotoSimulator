@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 
 import main.Cookies;
 import model.RandomDrawing;
+import model.User;
 
 @SuppressWarnings("serial")
 public class LotoPanel extends JPanel {
@@ -44,7 +45,15 @@ public class LotoPanel extends JPanel {
 	private Set<Integer> tmp_numeros;		// contains temporary choices of numbers by the user
 	private Set<Integer> tmp_n_chances;		// contains temporary choices of chance numbers by the user
 	
-	LotoPanel() {
+	private User currentUser; 				// Current user of the app
+	
+	public LotoPanel() {
+		
+		// TODO Change it, make a connexion
+		Cookies cookie = new Cookies();
+		currentUser = cookie.readCookie("toto");
+		//cookie.updateCookie(currentUser);
+		
 		// General settings
 		this.setBackground(Color.LIGHT_GRAY);
 		this.setLayout(new BorderLayout());
@@ -64,7 +73,7 @@ public class LotoPanel extends JPanel {
 		tmp_n_chances 		=  new TreeSet<Integer>();
 		
 		// user label
-		user_status.setText(Cookies.getCurrentUser().getLogin()+" : "+Cookies.getCurrentUser().getMoney());
+		user_status.setText(this.getCurrentUser().getLogin()+" : "+this.getCurrentUser().getMoney());
 		user_status.setHorizontalAlignment(JLabel.CENTER);
 		
 		// loto = make Grid + drawing
@@ -221,12 +230,10 @@ public class LotoPanel extends JPanel {
 	class MakeGridListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			// Add the current user his grid
-			Cookies.getCurrentUser().addGrid(tmp_numeros, tmp_n_chances);
-			System.out.println(Cookies.getCurrentUser().getGrids().get(0).getNumeros());
-			System.out.println(Cookies.getCurrentUser().getGrids().get(0).getN_chances());
+			getCurrentUser().addGrid(tmp_numeros, tmp_n_chances);
 			
 			// Updates User status
-			user_status.setText(Cookies.getCurrentUser().getLogin()+" : "+Cookies.getCurrentUser().getMoney());
+			user_status.setText(getCurrentUser().getLogin()+" : "+getCurrentUser().getMoney());
 			
 			// Enables again buttons
 			Iterator<Integer> iterator1 = tmp_numeros.iterator();
@@ -254,6 +261,7 @@ public class LotoPanel extends JPanel {
 	 */
 	class DrawingListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			
 			// Drawing phase
 			RandomDrawing draw = new RandomDrawing();
 			
@@ -261,15 +269,20 @@ public class LotoPanel extends JPanel {
 			displayImages(draw.getNumeros(),draw.getN_chance());
 			
 			// Checks if the user did win or not
-			System.out.println(Cookies.getCurrentUser().getGrids().get(0).getNumeros());
-			System.out.println(Cookies.getCurrentUser().getGrids().get(0).getN_chances());
-			Cookies.getCurrentUser().setWins(draw);
+			getCurrentUser().setWins(draw);
 			
 			// Updates User status
-			user_status.setText(Cookies.getCurrentUser().getLogin()+" : "+Cookies.getCurrentUser().getMoney());
+			user_status.setText(getCurrentUser().getLogin()+" : "+getCurrentUser().getMoney());
 			
 			// Clear User played grids
-			Cookies.getCurrentUser().getGrids().clear();
+			getCurrentUser().getGrids().clear();
+			
+			// Desables the draw button
+			drawing.setEnabled(false);
 		}
+	}
+	
+	public User getCurrentUser() {
+		return currentUser;
 	}
 }
