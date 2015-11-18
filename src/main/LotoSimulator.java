@@ -1,8 +1,11 @@
 package main;
 
 import java.awt.Dimension;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import view.*;
 
@@ -13,62 +16,32 @@ public class LotoSimulator {
 	 */
 	public static void main(String[] args) {
 		
-		JFrame frame = new JFrame();
-		LotoPanel content = new LotoPanel();
+		final JFrame frame = new JFrame();
+		final LotoPanel content = new LotoPanel();
 		frame.add(content);
 		frame.setMinimumSize(new Dimension(1000,800));
 		frame.setTitle("Loto Simulator");
 		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.setVisible(true);
-		
+		frame.addWindowListener(new WindowListener() {
+			public void windowClosing(WindowEvent arg0) {
+				if (JOptionPane.showConfirmDialog(frame, "Are you sure to close this window?", "Really Closing?",
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+							content.getCookie().updateCookie(content.getCurrentUser());
+							frame.setVisible(false);
+							frame.dispose();
+							System.exit(0);
+			        }
+		    }
 			
-		// Testing process (model)
-		/*
-		User user1 = new User("toto", 1000);
-		User user2 = new User("toto2", 1000);
-		
-		Grid grid1 = new Grid();
-		Set<Integer> num_serie_1 = new LinkedHashSet<Integer>();
-		for (int i=1; i<6; i++) {
-			num_serie_1.add(i);
-		}
-		Set<Integer> num_chance_1 = new LinkedHashSet<Integer>();
-		num_chance_1.add(3);
-		grid1.setGrid(num_serie_1, num_chance_1);
-		
-		Grid grid2 = new Grid();
-		Set<Integer> num_serie_2 = new LinkedHashSet<Integer>();
-		for (int i=1; i<7; i++) {
-			num_serie_2.add(i+10);
-		}
-		Set<Integer> num_chance_2 = new LinkedHashSet<Integer>();
-		num_chance_2.add(4);
-		num_chance_2.add(5);
-		grid2.setGrid(num_serie_2, num_chance_2);
-		
-		Vector<Grid> gridsU1 = new Vector<Grid>();
-		Vector<Grid> gridsU2 = new Vector<Grid>();
-		gridsU1.add(grid1);
-		gridsU1.add(grid2);
-		gridsU2.add(grid1);
-		
-		user1.setGrids(gridsU1);
-		user2.setGrids(gridsU2);
-		System.out.println(user1.getMoney());
-		System.out.println(user2.getMoney());
-		
-		RandomDrawing draw = new RandomDrawing();
-		System.out.println("Numéro chance : "+draw.getN_chance());
-		System.out.println("Les bons numéros : "+draw.getNumeros());
-		
-		user1.setWins(draw);
-		user2.setWins(draw);
-		
-		System.out.println(user1.getMoney());
-		System.out.println(user2.getMoney());
-		*/
-		
+			public void windowClosed(WindowEvent arg0) {}
+			public void windowActivated(WindowEvent arg0) {}
+			public void windowDeactivated(WindowEvent arg0) {}
+			public void windowDeiconified(WindowEvent arg0) {}
+			public void windowIconified(WindowEvent arg0) {}
+			public void windowOpened(WindowEvent arg0) {}
+		});
 	}
 
 }

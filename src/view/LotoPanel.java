@@ -25,9 +25,10 @@ import main.Cookies;
 import model.RandomDrawing;
 import model.User;
 
-@SuppressWarnings("serial")
 public class LotoPanel extends JPanel {
 
+	private static final long serialVersionUID = 1L;
+	
 	private JButton makeGrid;				// action button (valids a grid)
 	private JButton drawing;				// action button (launch draw)
 	private Vector<JButton> choices; 		// choices of the user to make his grid
@@ -46,14 +47,22 @@ public class LotoPanel extends JPanel {
 	private Set<Integer> tmp_n_chances;		// contains temporary choices of chance numbers by the user
 	
 	private User currentUser; 				// Current user of the app
+	private Cookies cookie;					// Cookies to store user login and money
 	
 	public LotoPanel() {
-		
-		// TODO Change it, make a connexion
-		Cookies cookie = new Cookies();
-		currentUser = cookie.readCookie("toto");
-		//cookie.updateCookie(currentUser);
-		
+		// General settings
+		this.setBackground(Color.LIGHT_GRAY);
+		this.setLayout(new BorderLayout());
+
+		// Connexion
+		Connexion connexion = new Connexion(this);
+		this.add(connexion, BorderLayout.CENTER);
+	}
+	
+	/**
+	 * Init the main loto panel after connexion
+	 */
+	public void init() {
 		// General settings
 		this.setBackground(Color.LIGHT_GRAY);
 		this.setLayout(new BorderLayout());
@@ -98,7 +107,6 @@ public class LotoPanel extends JPanel {
 		this.add(user_status, BorderLayout.NORTH);
 		this.add(p_loto, BorderLayout.CENTER);
 		this.add(buttons, BorderLayout.SOUTH);
-		
 	}
 	
 	/*
@@ -284,5 +292,17 @@ public class LotoPanel extends JPanel {
 	
 	public User getCurrentUser() {
 		return currentUser;
+	}
+	
+	public Cookies getCookie() {
+		return cookie;
+	}
+	
+	public void setCurrentUser(User currentUser) {
+		this.currentUser = currentUser;
+	}
+	
+	public void setCookie(Cookies cookie) {
+		this.cookie = cookie;
 	}
 }
