@@ -2,7 +2,6 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.util.Iterator;
 import java.util.Set;
@@ -11,10 +10,7 @@ import java.util.Vector;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -36,6 +32,7 @@ public class LotoPanel extends JPanel {
 	private JLabel user_status; 			// contains user status (login & money left)
 	private JLabel choose_numeros; 			// contains text (Choose your numeros)
 	private JLabel choose_n_chances; 		// contains text (Choose tour n_chances)
+	private JLabel current_grids; 			// contains user current grids
 	private JPanel p_grid_numeros; 			// contains pictures of the grid to make
 	private JPanel p_grid_chance; 			// contains pictures of the grid to make
 	private JPanel p_makeGrid; 				// contains pictures of the grid to make
@@ -71,6 +68,7 @@ public class LotoPanel extends JPanel {
 		user_status 		= new JLabel();
 		choose_numeros 		= new JLabel();
 		choose_n_chances 	= new JLabel();
+		current_grids		= new JLabel();
 		p_grid_numeros 		= new JPanel();
 		p_grid_chance 		= new JPanel();
 		p_makeGrid 			= new JPanel();
@@ -85,12 +83,22 @@ public class LotoPanel extends JPanel {
 		user_status.setText(this.getCurrentUser().getLogin()+" : "+this.getCurrentUser().getMoney());
 		user_status.setHorizontalAlignment(JLabel.CENTER);
 		
+		// current grids
+		JPanel p_current_grids = new JPanel();
+		JLabel your_current_grids = new JLabel("Your current grids");
+		your_current_grids.setHorizontalAlignment(JLabel.CENTER);
+		p_current_grids.setLayout(new BorderLayout());
+		p_current_grids.add(your_current_grids, BorderLayout.NORTH);
+		p_current_grids.add(current_grids, BorderLayout.CENTER);
+		
 		// loto = make Grid + drawing
 		this.makeChooseGrid();
+		p_drawing.setLayout(new GridLayout(1, 6));
 
 		p_loto.setLayout(new BorderLayout());
 		p_loto.add(p_makeGrid, BorderLayout.NORTH);
 		p_loto.add(p_drawing, BorderLayout.CENTER);
+		p_loto.add(p_current_grids, BorderLayout.SOUTH);
 		
 		// JPanel buttons
 		makeGrid = new JButton("Valid a grid");
@@ -153,7 +161,7 @@ public class LotoPanel extends JPanel {
 	 * Make the start grid (before the user choose any numbers)
 	 */
 	public void makeChooseGrid() {
-		p_grid_numeros.setLayout(new GridLayout(5, 10));
+		p_grid_numeros.setLayout(new GridLayout(7, 7));
 		p_grid_chance.setLayout(new GridLayout(1, 10));
 		// Make choices for numeros
 		for (int i=1;i<50;i++) {
@@ -181,29 +189,26 @@ public class LotoPanel extends JPanel {
 	}
 	
 	/*
-	 * Display on the screen a numero in a specific place
+	 * Displays on the screen a numero in a JLabel
 	 */
-	public void paintComponent(Graphics g, Integer boule_num, Integer count) {
-	    try {
-	      Image img = ImageIO.read(new File("./img/boule"+boule_num+".jpg"));
-	      g.drawImage(img,250+80*count, 0, 40, 40, p_drawing);
-
-	    } catch (IOException e) {
-	      e.printStackTrace();
-	    }
-	  }
+	public void addImagetoPanel(Integer boule_num) {
+		ImageIcon icon = new ImageIcon("./img/boule"+boule_num+".jpg");
+		Image img = icon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+		icon = new ImageIcon(img);
+		JLabel image = new JLabel(icon);
+		p_drawing.add(image);
+	}
 	
 	/*
-	 * Display on the screen numeros (winning or made by a grid)
+	 * Displays on the screen numeros (winning or made by a grid)
 	 */
 	public void displayImages(Set<Integer> numeros, Integer n_chance) {
+		p_drawing.removeAll(); // removes all (previous) images before displaying the new ones
 		Iterator<Integer> iterator1 = numeros.iterator();
-		Integer count = 0; // counts if this is the first ball drawn or the sixth...
 		while(iterator1.hasNext()) {
-			this.paintComponent(p_drawing.getGraphics(), iterator1.next(), count);
-			count++;
+			this.addImagetoPanel(iterator1.next());
 		}
-		this.paintComponent(p_drawing.getGraphics(), n_chance, count);
+		this.addImagetoPanel(n_chance);
 	}
 
 	/*
@@ -237,11 +242,9 @@ public class LotoPanel extends JPanel {
 	 */
 	class MakeGridListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			
 			// Add the current user his grid
 			getCurrentUser().addGrid(tmp_numeros, tmp_n_chances);
-			
-			// Updates User status
-			user_status.setText(getCurrentUser().getLogin()+" : "+getCurrentUser().getMoney());
 			
 			// Enables again buttons
 			Iterator<Integer> iterator1 = tmp_numeros.iterator();
@@ -254,13 +257,22 @@ public class LotoPanel extends JPanel {
 		    	Integer index = Integer.valueOf(iterator2.next());
 		    	choices_chance.get(index-1).setEnabled(true);
 			}
-			
+
 			// Clears tmp Sets
 			tmp_numeros.clear();
 			tmp_n_chances.clear();
-
-			// Enables the draw button
-			drawing.setEnabled(true);
+			
+			if (!getCurrentUser().getGrids().isEmpty()) { // if checkGrids has returned true
+				// Updates User status
+				user_status.setText(getCurrentUser().getLogin()+" : "+getCurrentUser().getMoney());
+				
+				// Displays the grid in the UI
+				current_grids.setText(getCurrentUser().getGrids().toString());
+				current_grids.setHorizontalAlignment(JLabel.CENTER);
+				
+				// Enables the draw button
+				drawing.setEnabled(true);
+			}
 		}
 	}
 	
@@ -285,8 +297,12 @@ public class LotoPanel extends JPanel {
 			// Clear User played grids
 			getCurrentUser().getGrids().clear();
 			
+			//Updates the view the grid is cleared
+			current_grids.setText("");
+			
 			// Desables the draw button
 			drawing.setEnabled(false);
+			
 		}
 	}
 	

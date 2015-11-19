@@ -144,4 +144,20 @@ public class Grid {
 		return false;
 	}
 	
+	/*
+	 * toString function for a Grid
+	 */
+	public String toString() {
+		String s = new String("");
+		for(int i=0; i<numeros.size(); i++) {
+			s += numeros.get(i) + " ";
+		}
+		s += "| ";
+		for(int i=0; i<n_chances.size(); i++) {
+			s += n_chances.get(i) + " ";
+		}
+		s += "\n";
+		return s;
+	}
+	
 }

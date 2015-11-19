@@ -19,7 +19,7 @@ public class LotoSimulator {
 		final JFrame frame = new JFrame();
 		final LotoPanel content = new LotoPanel();
 		frame.add(content);
-		frame.setMinimumSize(new Dimension(1000,800));
+		frame.setMinimumSize(new Dimension(850,600));
 		frame.setTitle("Loto Simulator");
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
