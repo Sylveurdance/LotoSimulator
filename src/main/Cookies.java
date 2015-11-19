@@ -47,17 +47,20 @@ public class Cookies {
 	public User readCookie(String login) {
 		String line = new String("");
 		try {
+			in.mark(1+(int)open.length());
 			line = in.readLine();
 			while (line != null) {
 				if (line.startsWith(login)) {
 					String s_money = line.split(";")[1];
 					Integer money = Integer.decode(s_money);
 					if (money != null) {
+						in.reset();
 						return new User(login,money);
 					}
 				}
 				line = in.readLine();
 			}
+			in.reset();
 			return new User(login,1000); // new user in the game
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -69,32 +72,39 @@ public class Cookies {
 	 * Prints user infos in the cookie file
 	 */
 	public void updateCookie(User loggedInUser) { 
-		String s = new String("");
-		s = loggedInUser.getLogin()+";"+loggedInUser.getMoney()+"\n";
-		
+		String s = new String(loggedInUser.getLogin()+";"+loggedInUser.getMoney()+"\n");	
 		String line = new String("");
+		boolean flag = false; // flag to know if the current User was found after reading all lines
+		
 		try {
 			line = in.readLine();
 			if (line == null) { // Empty cookie file
 				out.write(s);
 				out.flush();
 			}
-			while (line != null) {
+			while (line != null) { // update the user status
 				if (line.startsWith(loggedInUser.getLogin())) {
 					out.write(s);
+					flag = true;
 				}
-				else {
+				else { // copy the in file line into the out file
 					out.write(line+"\n");
 				}
 				out.flush();
 				line = in.readLine();
 			}
+			if(!flag) { // current user not found
+				out.write(s);
+				out.flush();
+			}
+			
+			// closing files
 			in.close();
 			out.close();
 			
+			// delete the read file and replace it by the new updated out file
 			open.delete();
 			exit.renameTo(new File(filename));
-			
 			
 		} catch (IOException e) {
 			e.printStackTrace();
